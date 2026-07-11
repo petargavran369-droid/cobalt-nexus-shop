@@ -9,19 +9,56 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as StoreRouteImport } from './routes/store'
+import { Route as LinkSteamRouteImport } from './routes/link-steam'
+import { Route as LinkDiscordRouteImport } from './routes/link-discord'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PackagesSlugRouteImport } from './routes/packages.$slug'
+import { Route as CheckoutSlugRouteImport } from './routes/checkout.$slug'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoreRoute = StoreRouteImport.update({
   id: '/store',
   path: '/store',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LinkSteamRoute = LinkSteamRouteImport.update({
+  id: '/link-steam',
+  path: '/link-steam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LinkDiscordRoute = LinkDiscordRouteImport.update({
+  id: '/link-discord',
+  path: '/link-discord',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -34,43 +71,124 @@ const PackagesSlugRoute = PackagesSlugRouteImport.update({
   path: '/packages/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutSlugRoute = CheckoutSlugRouteImport.update({
+  id: '/checkout/$slug',
+  path: '/checkout/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/link-discord': typeof LinkDiscordRoute
+  '/link-steam': typeof LinkSteamRoute
   '/store': typeof StoreRoute
+  '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
+  '/checkout/$slug': typeof CheckoutSlugRoute
   '/packages/$slug': typeof PackagesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/link-discord': typeof LinkDiscordRoute
+  '/link-steam': typeof LinkSteamRoute
   '/store': typeof StoreRoute
+  '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
+  '/checkout/$slug': typeof CheckoutSlugRoute
   '/packages/$slug': typeof PackagesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/link-discord': typeof LinkDiscordRoute
+  '/link-steam': typeof LinkSteamRoute
   '/store': typeof StoreRoute
+  '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
+  '/checkout/$slug': typeof CheckoutSlugRoute
   '/packages/$slug': typeof PackagesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/store' | '/packages/$slug'
+  fullPaths:
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/auth'
+    | '/link-discord'
+    | '/link-steam'
+    | '/store'
+    | '/support'
+    | '/terms'
+    | '/checkout/$slug'
+    | '/packages/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/store' | '/packages/$slug'
-  id: '__root__' | '/' | '/auth' | '/store' | '/packages/$slug'
+  to:
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/auth'
+    | '/link-discord'
+    | '/link-steam'
+    | '/store'
+    | '/support'
+    | '/terms'
+    | '/checkout/$slug'
+    | '/packages/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/auth'
+    | '/link-discord'
+    | '/link-steam'
+    | '/store'
+    | '/support'
+    | '/terms'
+    | '/checkout/$slug'
+    | '/packages/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  LinkDiscordRoute: typeof LinkDiscordRoute
+  LinkSteamRoute: typeof LinkSteamRoute
   StoreRoute: typeof StoreRoute
+  SupportRoute: typeof SupportRoute
+  TermsRoute: typeof TermsRoute
+  CheckoutSlugRoute: typeof CheckoutSlugRoute
   PackagesSlugRoute: typeof PackagesSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/store': {
       id: '/store'
       path: '/store'
@@ -78,11 +196,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/link-steam': {
+      id: '/link-steam'
+      path: '/link-steam'
+      fullPath: '/link-steam'
+      preLoaderRoute: typeof LinkSteamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/link-discord': {
+      id: '/link-discord'
+      path: '/link-discord'
+      fullPath: '/link-discord'
+      preLoaderRoute: typeof LinkDiscordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -99,13 +245,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PackagesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/$slug': {
+      id: '/checkout/$slug'
+      path: '/checkout/$slug'
+      fullPath: '/checkout/$slug'
+      preLoaderRoute: typeof CheckoutSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  LinkDiscordRoute: LinkDiscordRoute,
+  LinkSteamRoute: LinkSteamRoute,
   StoreRoute: StoreRoute,
+  SupportRoute: SupportRoute,
+  TermsRoute: TermsRoute,
+  CheckoutSlugRoute: CheckoutSlugRoute,
   PackagesSlugRoute: PackagesSlugRoute,
 }
 export const routeTree = rootRouteImport
