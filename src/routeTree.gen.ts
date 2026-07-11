@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as StoreRouteImport } from './routes/store'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as LinkSteamRouteImport } from './routes/link-steam'
 import { Route as LinkDiscordRouteImport } from './routes/link-discord'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -19,7 +20,13 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PackagesSlugRouteImport } from './routes/packages.$slug'
+import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
 import { Route as CheckoutSlugRouteImport } from './routes/checkout.$slug'
+import { Route as ApiPublicSteamVerifyRouteImport } from './routes/api/public/steam/verify'
+import { Route as ApiPublicSteamInitiateRouteImport } from './routes/api/public/steam/initiate'
+import { Route as ApiPublicDiscordInitiateRouteImport } from './routes/api/public/discord/initiate'
+import { Route as ApiPublicDiscordCallbackRouteImport } from './routes/api/public/discord/callback'
+import { Route as ApiPublicCheckoutCreateRouteImport } from './routes/api/public/checkout/create'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -34,6 +41,11 @@ const SupportRoute = SupportRouteImport.update({
 const StoreRoute = StoreRouteImport.update({
   id: '/store',
   path: '/store',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LinkSteamRoute = LinkSteamRouteImport.update({
@@ -71,9 +83,41 @@ const PackagesSlugRoute = PackagesSlugRouteImport.update({
   path: '/packages/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
+  id: '/checkout/success',
+  path: '/checkout/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutSlugRoute = CheckoutSlugRouteImport.update({
   id: '/checkout/$slug',
   path: '/checkout/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSteamVerifyRoute = ApiPublicSteamVerifyRouteImport.update({
+  id: '/api/public/steam/verify',
+  path: '/api/public/steam/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSteamInitiateRoute = ApiPublicSteamInitiateRouteImport.update({
+  id: '/api/public/steam/initiate',
+  path: '/api/public/steam/initiate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicDiscordInitiateRoute =
+  ApiPublicDiscordInitiateRouteImport.update({
+    id: '/api/public/discord/initiate',
+    path: '/api/public/discord/initiate',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicDiscordCallbackRoute =
+  ApiPublicDiscordCallbackRouteImport.update({
+    id: '/api/public/discord/callback',
+    path: '/api/public/discord/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicCheckoutCreateRoute = ApiPublicCheckoutCreateRouteImport.update({
+  id: '/api/public/checkout/create',
+  path: '/api/public/checkout/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -84,11 +128,18 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/link-discord': typeof LinkDiscordRoute
   '/link-steam': typeof LinkSteamRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/store': typeof StoreRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/checkout/$slug': typeof CheckoutSlugRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/packages/$slug': typeof PackagesSlugRoute
+  '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
+  '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
+  '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
+  '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
+  '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -97,11 +148,18 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/link-discord': typeof LinkDiscordRoute
   '/link-steam': typeof LinkSteamRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/store': typeof StoreRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/checkout/$slug': typeof CheckoutSlugRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/packages/$slug': typeof PackagesSlugRoute
+  '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
+  '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
+  '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
+  '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
+  '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -111,11 +169,18 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/link-discord': typeof LinkDiscordRoute
   '/link-steam': typeof LinkSteamRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/store': typeof StoreRoute
   '/support': typeof SupportRoute
   '/terms': typeof TermsRoute
   '/checkout/$slug': typeof CheckoutSlugRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/packages/$slug': typeof PackagesSlugRoute
+  '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
+  '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
+  '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
+  '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
+  '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,11 +191,18 @@ export interface FileRouteTypes {
     | '/auth'
     | '/link-discord'
     | '/link-steam'
+    | '/sitemap.xml'
     | '/store'
     | '/support'
     | '/terms'
     | '/checkout/$slug'
+    | '/checkout/success'
     | '/packages/$slug'
+    | '/api/public/checkout/create'
+    | '/api/public/discord/callback'
+    | '/api/public/discord/initiate'
+    | '/api/public/steam/initiate'
+    | '/api/public/steam/verify'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -139,11 +211,18 @@ export interface FileRouteTypes {
     | '/auth'
     | '/link-discord'
     | '/link-steam'
+    | '/sitemap.xml'
     | '/store'
     | '/support'
     | '/terms'
     | '/checkout/$slug'
+    | '/checkout/success'
     | '/packages/$slug'
+    | '/api/public/checkout/create'
+    | '/api/public/discord/callback'
+    | '/api/public/discord/initiate'
+    | '/api/public/steam/initiate'
+    | '/api/public/steam/verify'
   id:
     | '__root__'
     | '/'
@@ -152,11 +231,18 @@ export interface FileRouteTypes {
     | '/auth'
     | '/link-discord'
     | '/link-steam'
+    | '/sitemap.xml'
     | '/store'
     | '/support'
     | '/terms'
     | '/checkout/$slug'
+    | '/checkout/success'
     | '/packages/$slug'
+    | '/api/public/checkout/create'
+    | '/api/public/discord/callback'
+    | '/api/public/discord/initiate'
+    | '/api/public/steam/initiate'
+    | '/api/public/steam/verify'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -166,11 +252,18 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   LinkDiscordRoute: typeof LinkDiscordRoute
   LinkSteamRoute: typeof LinkSteamRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StoreRoute: typeof StoreRoute
   SupportRoute: typeof SupportRoute
   TermsRoute: typeof TermsRoute
   CheckoutSlugRoute: typeof CheckoutSlugRoute
+  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
   PackagesSlugRoute: typeof PackagesSlugRoute
+  ApiPublicCheckoutCreateRoute: typeof ApiPublicCheckoutCreateRoute
+  ApiPublicDiscordCallbackRoute: typeof ApiPublicDiscordCallbackRoute
+  ApiPublicDiscordInitiateRoute: typeof ApiPublicDiscordInitiateRoute
+  ApiPublicSteamInitiateRoute: typeof ApiPublicSteamInitiateRoute
+  ApiPublicSteamVerifyRoute: typeof ApiPublicSteamVerifyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -194,6 +287,13 @@ declare module '@tanstack/react-router' {
       path: '/store'
       fullPath: '/store'
       preLoaderRoute: typeof StoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/link-steam': {
@@ -245,11 +345,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PackagesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/success': {
+      id: '/checkout/success'
+      path: '/checkout/success'
+      fullPath: '/checkout/success'
+      preLoaderRoute: typeof CheckoutSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout/$slug': {
       id: '/checkout/$slug'
       path: '/checkout/$slug'
       fullPath: '/checkout/$slug'
       preLoaderRoute: typeof CheckoutSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/steam/verify': {
+      id: '/api/public/steam/verify'
+      path: '/api/public/steam/verify'
+      fullPath: '/api/public/steam/verify'
+      preLoaderRoute: typeof ApiPublicSteamVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/steam/initiate': {
+      id: '/api/public/steam/initiate'
+      path: '/api/public/steam/initiate'
+      fullPath: '/api/public/steam/initiate'
+      preLoaderRoute: typeof ApiPublicSteamInitiateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/discord/initiate': {
+      id: '/api/public/discord/initiate'
+      path: '/api/public/discord/initiate'
+      fullPath: '/api/public/discord/initiate'
+      preLoaderRoute: typeof ApiPublicDiscordInitiateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/discord/callback': {
+      id: '/api/public/discord/callback'
+      path: '/api/public/discord/callback'
+      fullPath: '/api/public/discord/callback'
+      preLoaderRoute: typeof ApiPublicDiscordCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/checkout/create': {
+      id: '/api/public/checkout/create'
+      path: '/api/public/checkout/create'
+      fullPath: '/api/public/checkout/create'
+      preLoaderRoute: typeof ApiPublicCheckoutCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -262,11 +404,18 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   LinkDiscordRoute: LinkDiscordRoute,
   LinkSteamRoute: LinkSteamRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StoreRoute: StoreRoute,
   SupportRoute: SupportRoute,
   TermsRoute: TermsRoute,
   CheckoutSlugRoute: CheckoutSlugRoute,
+  CheckoutSuccessRoute: CheckoutSuccessRoute,
   PackagesSlugRoute: PackagesSlugRoute,
+  ApiPublicCheckoutCreateRoute: ApiPublicCheckoutCreateRoute,
+  ApiPublicDiscordCallbackRoute: ApiPublicDiscordCallbackRoute,
+  ApiPublicDiscordInitiateRoute: ApiPublicDiscordInitiateRoute,
+  ApiPublicSteamInitiateRoute: ApiPublicSteamInitiateRoute,
+  ApiPublicSteamVerifyRoute: ApiPublicSteamVerifyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
