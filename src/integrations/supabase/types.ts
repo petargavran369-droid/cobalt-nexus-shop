@@ -14,16 +14,273 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_logs: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
+      deliveries: {
+        Row: {
+          action: Database["public"]["Enums"]["delivery_action"]
+          command: string | null
+          created_at: string
+          error_message: string | null
+          executed_at: string | null
+          id: string
+          order_id: string
+          status: Database["public"]["Enums"]["delivery_status"]
+          target: string | null
+          type: Database["public"]["Enums"]["delivery_type"]
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["delivery_action"]
+          command?: string | null
+          created_at?: string
+          error_message?: string | null
+          executed_at?: string | null
+          id?: string
+          order_id: string
+          status?: Database["public"]["Enums"]["delivery_status"]
+          target?: string | null
+          type: Database["public"]["Enums"]["delivery_type"]
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["delivery_action"]
+          command?: string | null
+          created_at?: string
+          error_message?: string | null
+          executed_at?: string | null
+          id?: string
+          order_id?: string
+          status?: Database["public"]["Enums"]["delivery_status"]
+          target?: string | null
+          type?: Database["public"]["Enums"]["delivery_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deliveries_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          activated_at: string | null
+          amount_paid: number | null
+          created_at: string
+          currency: string | null
+          discord_id: string | null
+          expires_at: string | null
+          id: string
+          package_id: string
+          status: Database["public"]["Enums"]["order_status"]
+          steam_id: string | null
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          amount_paid?: number | null
+          created_at?: string
+          currency?: string | null
+          discord_id?: string | null
+          expires_at?: string | null
+          id?: string
+          package_id: string
+          status?: Database["public"]["Enums"]["order_status"]
+          steam_id?: string | null
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          user_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          amount_paid?: number | null
+          created_at?: string
+          currency?: string | null
+          discord_id?: string | null
+          expires_at?: string | null
+          id?: string
+          package_id?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          steam_id?: string | null
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      packages: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          discord_role_key: string | null
+          duration_days: number | null
+          features: Json
+          id: string
+          image_url: string | null
+          name: string
+          price_eur: number
+          rust_command_add: string | null
+          rust_command_remove: string | null
+          short_description: string | null
+          slug: string
+          sort_order: number
+          tier: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          discord_role_key?: string | null
+          duration_days?: number | null
+          features?: Json
+          id?: string
+          image_url?: string | null
+          name: string
+          price_eur: number
+          rust_command_add?: string | null
+          rust_command_remove?: string | null
+          short_description?: string | null
+          slug: string
+          sort_order?: number
+          tier?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          discord_role_key?: string | null
+          duration_days?: number | null
+          features?: Json
+          id?: string
+          image_url?: string | null
+          name?: string
+          price_eur?: number
+          rust_command_add?: string | null
+          rust_command_remove?: string | null
+          short_description?: string | null
+          slug?: string
+          sort_order?: number
+          tier?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          discord_id: string | null
+          discord_username: string | null
+          email: string | null
+          id: string
+          steam_id: string | null
+          steam_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          discord_id?: string | null
+          discord_username?: string | null
+          email?: string | null
+          id: string
+          steam_id?: string | null
+          steam_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          discord_id?: string | null
+          discord_username?: string | null
+          email?: string | null
+          id?: string
+          steam_id?: string | null
+          steam_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
+      delivery_action: "add" | "remove"
+      delivery_status: "pending" | "success" | "failed"
+      delivery_type: "rust_command" | "discord_role"
+      order_status:
+        | "pending"
+        | "paid"
+        | "active"
+        | "expired"
+        | "refunded"
+        | "chargeback"
+        | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +407,20 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+      delivery_action: ["add", "remove"],
+      delivery_status: ["pending", "success", "failed"],
+      delivery_type: ["rust_command", "discord_role"],
+      order_status: [
+        "pending",
+        "paid",
+        "active",
+        "expired",
+        "refunded",
+        "chargeback",
+        "failed",
+      ],
+    },
   },
 } as const
