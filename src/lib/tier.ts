@@ -33,12 +33,3 @@ export function tierFromSlug(slug: string): Tier {
   if (slug === "vip-plus") return "vipplus";
   return "support";
 }
-
-export function imageForSlug(slug: string): string {
-  switch (slug) {
-    case "queue-priority": return "/src/assets/pkg-queue.jpg";
-    case "vip": return "/src/assets/pkg-vip.jpg";
-    case "vip-plus": return "/src/assets/pkg-vipplus.jpg";
-    default: return "/src/assets/pkg-support.jpg";
-  }
-}

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, Crown, Heart, Zap, Check } from "lucide-react";
-import { tierFromSlug, tierMeta, imageForSlug } from "@/lib/tier";
+import { tierFromSlug, tierMeta } from "@/lib/tier";
+import { imageForSlug } from "@/lib/package-images";
 
 interface Pkg {
   id: string;
