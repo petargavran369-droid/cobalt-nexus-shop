@@ -22,6 +22,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PackagesSlugRouteImport } from './routes/packages.$slug'
 import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
 import { Route as CheckoutSlugRouteImport } from './routes/checkout.$slug'
+import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicSteamVerifyRouteImport } from './routes/api/public/steam/verify'
 import { Route as ApiPublicSteamInitiateRouteImport } from './routes/api/public/steam/initiate'
 import { Route as ApiPublicDiscordInitiateRouteImport } from './routes/api/public/discord/initiate'
@@ -93,6 +94,11 @@ const CheckoutSlugRoute = CheckoutSlugRouteImport.update({
   path: '/checkout/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
+  id: '/api/public/stripe/webhook',
+  path: '/api/public/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSteamVerifyRoute = ApiPublicSteamVerifyRouteImport.update({
   id: '/api/public/steam/verify',
   path: '/api/public/steam/verify',
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
   '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
   '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
   '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
   '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
   '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
   '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/api/public/discord/initiate'
     | '/api/public/steam/initiate'
     | '/api/public/steam/verify'
+    | '/api/public/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/api/public/discord/initiate'
     | '/api/public/steam/initiate'
     | '/api/public/steam/verify'
+    | '/api/public/stripe/webhook'
   id:
     | '__root__'
     | '/'
@@ -243,6 +254,7 @@ export interface FileRouteTypes {
     | '/api/public/discord/initiate'
     | '/api/public/steam/initiate'
     | '/api/public/steam/verify'
+    | '/api/public/stripe/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -264,6 +276,7 @@ export interface RootRouteChildren {
   ApiPublicDiscordInitiateRoute: typeof ApiPublicDiscordInitiateRoute
   ApiPublicSteamInitiateRoute: typeof ApiPublicSteamInitiateRoute
   ApiPublicSteamVerifyRoute: typeof ApiPublicSteamVerifyRoute
+  ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -359,6 +372,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stripe/webhook': {
+      id: '/api/public/stripe/webhook'
+      path: '/api/public/stripe/webhook'
+      fullPath: '/api/public/stripe/webhook'
+      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/steam/verify': {
       id: '/api/public/steam/verify'
       path: '/api/public/steam/verify'
@@ -416,6 +436,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicDiscordInitiateRoute: ApiPublicDiscordInitiateRoute,
   ApiPublicSteamInitiateRoute: ApiPublicSteamInitiateRoute,
   ApiPublicSteamVerifyRoute: ApiPublicSteamVerifyRoute,
+  ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
