@@ -228,8 +228,8 @@ export async function activateOrderAndDeliver(orderId: string) {
   const now = new Date();
   const expires = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
   await supabaseAdmin.from("orders").update({
-    status: "active",
-    paid_at: now.toISOString(),
+    status: "active" as const,
+    activated_at: now.toISOString(),
     expires_at: expires.toISOString(),
   }).eq("id", orderId);
   return deliverOrder(orderId);
