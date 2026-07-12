@@ -29,6 +29,7 @@ import { Route as ApiPublicHooksExpireOrdersRouteImport } from './routes/api/pub
 import { Route as ApiPublicDiscordInitiateRouteImport } from './routes/api/public/discord/initiate'
 import { Route as ApiPublicDiscordCallbackRouteImport } from './routes/api/public/discord/callback'
 import { Route as ApiPublicCheckoutCreateRouteImport } from './routes/api/public/checkout/create'
+import { Route as ApiPublicCheckoutConfirmRouteImport } from './routes/api/public/checkout/confirm'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -133,6 +134,12 @@ const ApiPublicCheckoutCreateRoute = ApiPublicCheckoutCreateRouteImport.update({
   path: '/api/public/checkout/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCheckoutConfirmRoute =
+  ApiPublicCheckoutConfirmRouteImport.update({
+    id: '/api/public/checkout/confirm',
+    path: '/api/public/checkout/confirm',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/checkout/$slug': typeof CheckoutSlugRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/packages/$slug': typeof PackagesSlugRoute
+  '/api/public/checkout/confirm': typeof ApiPublicCheckoutConfirmRoute
   '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
   '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
@@ -170,6 +178,7 @@ export interface FileRoutesByTo {
   '/checkout/$slug': typeof CheckoutSlugRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/packages/$slug': typeof PackagesSlugRoute
+  '/api/public/checkout/confirm': typeof ApiPublicCheckoutConfirmRoute
   '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
   '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
@@ -193,6 +202,7 @@ export interface FileRoutesById {
   '/checkout/$slug': typeof CheckoutSlugRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/packages/$slug': typeof PackagesSlugRoute
+  '/api/public/checkout/confirm': typeof ApiPublicCheckoutConfirmRoute
   '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
   '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/checkout/$slug'
     | '/checkout/success'
     | '/packages/$slug'
+    | '/api/public/checkout/confirm'
     | '/api/public/checkout/create'
     | '/api/public/discord/callback'
     | '/api/public/discord/initiate'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/checkout/$slug'
     | '/checkout/success'
     | '/packages/$slug'
+    | '/api/public/checkout/confirm'
     | '/api/public/checkout/create'
     | '/api/public/discord/callback'
     | '/api/public/discord/initiate'
@@ -261,6 +273,7 @@ export interface FileRouteTypes {
     | '/checkout/$slug'
     | '/checkout/success'
     | '/packages/$slug'
+    | '/api/public/checkout/confirm'
     | '/api/public/checkout/create'
     | '/api/public/discord/callback'
     | '/api/public/discord/initiate'
@@ -284,6 +297,7 @@ export interface RootRouteChildren {
   CheckoutSlugRoute: typeof CheckoutSlugRoute
   CheckoutSuccessRoute: typeof CheckoutSuccessRoute
   PackagesSlugRoute: typeof PackagesSlugRoute
+  ApiPublicCheckoutConfirmRoute: typeof ApiPublicCheckoutConfirmRoute
   ApiPublicCheckoutCreateRoute: typeof ApiPublicCheckoutCreateRoute
   ApiPublicDiscordCallbackRoute: typeof ApiPublicDiscordCallbackRoute
   ApiPublicDiscordInitiateRoute: typeof ApiPublicDiscordInitiateRoute
@@ -435,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCheckoutCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/checkout/confirm': {
+      id: '/api/public/checkout/confirm'
+      path: '/api/public/checkout/confirm'
+      fullPath: '/api/public/checkout/confirm'
+      preLoaderRoute: typeof ApiPublicCheckoutConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -452,6 +473,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutSlugRoute: CheckoutSlugRoute,
   CheckoutSuccessRoute: CheckoutSuccessRoute,
   PackagesSlugRoute: PackagesSlugRoute,
+  ApiPublicCheckoutConfirmRoute: ApiPublicCheckoutConfirmRoute,
   ApiPublicCheckoutCreateRoute: ApiPublicCheckoutCreateRoute,
   ApiPublicDiscordCallbackRoute: ApiPublicDiscordCallbackRoute,
   ApiPublicDiscordInitiateRoute: ApiPublicDiscordInitiateRoute,
