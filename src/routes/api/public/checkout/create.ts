@@ -17,7 +17,7 @@ export const Route = createFileRoute("/api/public/checkout/create")({
         const url = new URL(request.url);
         const supabaseUrl = process.env.SUPABASE_URL!;
         const publishable = process.env.SUPABASE_PUBLISHABLE_KEY!;
-        const stripeKey = process.env.STRIPE_SECRET_KEY;
+        const stripeKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_TEST_API_KEY;
 
         if (!stripeKey) {
           return json({ error: "Stripe not configured yet — admin must add STRIPE_SECRET_KEY." }, 500);

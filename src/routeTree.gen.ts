@@ -22,11 +22,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PackagesSlugRouteImport } from './routes/packages.$slug'
 import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
 import { Route as CheckoutSlugRouteImport } from './routes/checkout.$slug'
+import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicSteamVerifyRouteImport } from './routes/api/public/steam/verify'
 import { Route as ApiPublicSteamInitiateRouteImport } from './routes/api/public/steam/initiate'
+import { Route as ApiPublicHooksExpireOrdersRouteImport } from './routes/api/public/hooks/expire-orders'
 import { Route as ApiPublicDiscordInitiateRouteImport } from './routes/api/public/discord/initiate'
 import { Route as ApiPublicDiscordCallbackRouteImport } from './routes/api/public/discord/callback'
 import { Route as ApiPublicCheckoutCreateRouteImport } from './routes/api/public/checkout/create'
+import { Route as ApiPublicCheckoutConfirmRouteImport } from './routes/api/public/checkout/confirm'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -93,6 +96,11 @@ const CheckoutSlugRoute = CheckoutSlugRouteImport.update({
   path: '/checkout/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
+  id: '/api/public/stripe/webhook',
+  path: '/api/public/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSteamVerifyRoute = ApiPublicSteamVerifyRouteImport.update({
   id: '/api/public/steam/verify',
   path: '/api/public/steam/verify',
@@ -103,6 +111,12 @@ const ApiPublicSteamInitiateRoute = ApiPublicSteamInitiateRouteImport.update({
   path: '/api/public/steam/initiate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksExpireOrdersRoute =
+  ApiPublicHooksExpireOrdersRouteImport.update({
+    id: '/api/public/hooks/expire-orders',
+    path: '/api/public/hooks/expire-orders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicDiscordInitiateRoute =
   ApiPublicDiscordInitiateRouteImport.update({
     id: '/api/public/discord/initiate',
@@ -120,6 +134,12 @@ const ApiPublicCheckoutCreateRoute = ApiPublicCheckoutCreateRouteImport.update({
   path: '/api/public/checkout/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCheckoutConfirmRoute =
+  ApiPublicCheckoutConfirmRouteImport.update({
+    id: '/api/public/checkout/confirm',
+    path: '/api/public/checkout/confirm',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -135,11 +155,14 @@ export interface FileRoutesByFullPath {
   '/checkout/$slug': typeof CheckoutSlugRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/packages/$slug': typeof PackagesSlugRoute
+  '/api/public/checkout/confirm': typeof ApiPublicCheckoutConfirmRoute
   '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
   '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
+  '/api/public/hooks/expire-orders': typeof ApiPublicHooksExpireOrdersRoute
   '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
   '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -155,11 +178,14 @@ export interface FileRoutesByTo {
   '/checkout/$slug': typeof CheckoutSlugRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/packages/$slug': typeof PackagesSlugRoute
+  '/api/public/checkout/confirm': typeof ApiPublicCheckoutConfirmRoute
   '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
   '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
+  '/api/public/hooks/expire-orders': typeof ApiPublicHooksExpireOrdersRoute
   '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
   '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -176,11 +202,14 @@ export interface FileRoutesById {
   '/checkout/$slug': typeof CheckoutSlugRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/packages/$slug': typeof PackagesSlugRoute
+  '/api/public/checkout/confirm': typeof ApiPublicCheckoutConfirmRoute
   '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
   '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
+  '/api/public/hooks/expire-orders': typeof ApiPublicHooksExpireOrdersRoute
   '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
   '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,11 +227,14 @@ export interface FileRouteTypes {
     | '/checkout/$slug'
     | '/checkout/success'
     | '/packages/$slug'
+    | '/api/public/checkout/confirm'
     | '/api/public/checkout/create'
     | '/api/public/discord/callback'
     | '/api/public/discord/initiate'
+    | '/api/public/hooks/expire-orders'
     | '/api/public/steam/initiate'
     | '/api/public/steam/verify'
+    | '/api/public/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -218,11 +250,14 @@ export interface FileRouteTypes {
     | '/checkout/$slug'
     | '/checkout/success'
     | '/packages/$slug'
+    | '/api/public/checkout/confirm'
     | '/api/public/checkout/create'
     | '/api/public/discord/callback'
     | '/api/public/discord/initiate'
+    | '/api/public/hooks/expire-orders'
     | '/api/public/steam/initiate'
     | '/api/public/steam/verify'
+    | '/api/public/stripe/webhook'
   id:
     | '__root__'
     | '/'
@@ -238,11 +273,14 @@ export interface FileRouteTypes {
     | '/checkout/$slug'
     | '/checkout/success'
     | '/packages/$slug'
+    | '/api/public/checkout/confirm'
     | '/api/public/checkout/create'
     | '/api/public/discord/callback'
     | '/api/public/discord/initiate'
+    | '/api/public/hooks/expire-orders'
     | '/api/public/steam/initiate'
     | '/api/public/steam/verify'
+    | '/api/public/stripe/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -259,11 +297,14 @@ export interface RootRouteChildren {
   CheckoutSlugRoute: typeof CheckoutSlugRoute
   CheckoutSuccessRoute: typeof CheckoutSuccessRoute
   PackagesSlugRoute: typeof PackagesSlugRoute
+  ApiPublicCheckoutConfirmRoute: typeof ApiPublicCheckoutConfirmRoute
   ApiPublicCheckoutCreateRoute: typeof ApiPublicCheckoutCreateRoute
   ApiPublicDiscordCallbackRoute: typeof ApiPublicDiscordCallbackRoute
   ApiPublicDiscordInitiateRoute: typeof ApiPublicDiscordInitiateRoute
+  ApiPublicHooksExpireOrdersRoute: typeof ApiPublicHooksExpireOrdersRoute
   ApiPublicSteamInitiateRoute: typeof ApiPublicSteamInitiateRoute
   ApiPublicSteamVerifyRoute: typeof ApiPublicSteamVerifyRoute
+  ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -359,6 +400,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stripe/webhook': {
+      id: '/api/public/stripe/webhook'
+      path: '/api/public/stripe/webhook'
+      fullPath: '/api/public/stripe/webhook'
+      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/steam/verify': {
       id: '/api/public/steam/verify'
       path: '/api/public/steam/verify'
@@ -371,6 +419,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/steam/initiate'
       fullPath: '/api/public/steam/initiate'
       preLoaderRoute: typeof ApiPublicSteamInitiateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/expire-orders': {
+      id: '/api/public/hooks/expire-orders'
+      path: '/api/public/hooks/expire-orders'
+      fullPath: '/api/public/hooks/expire-orders'
+      preLoaderRoute: typeof ApiPublicHooksExpireOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/discord/initiate': {
@@ -394,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCheckoutCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/checkout/confirm': {
+      id: '/api/public/checkout/confirm'
+      path: '/api/public/checkout/confirm'
+      fullPath: '/api/public/checkout/confirm'
+      preLoaderRoute: typeof ApiPublicCheckoutConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -411,22 +473,15 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutSlugRoute: CheckoutSlugRoute,
   CheckoutSuccessRoute: CheckoutSuccessRoute,
   PackagesSlugRoute: PackagesSlugRoute,
+  ApiPublicCheckoutConfirmRoute: ApiPublicCheckoutConfirmRoute,
   ApiPublicCheckoutCreateRoute: ApiPublicCheckoutCreateRoute,
   ApiPublicDiscordCallbackRoute: ApiPublicDiscordCallbackRoute,
   ApiPublicDiscordInitiateRoute: ApiPublicDiscordInitiateRoute,
+  ApiPublicHooksExpireOrdersRoute: ApiPublicHooksExpireOrdersRoute,
   ApiPublicSteamInitiateRoute: ApiPublicSteamInitiateRoute,
   ApiPublicSteamVerifyRoute: ApiPublicSteamVerifyRoute,
+  ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
