@@ -25,6 +25,7 @@ import { Route as CheckoutSlugRouteImport } from './routes/checkout.$slug'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicSteamVerifyRouteImport } from './routes/api/public/steam/verify'
 import { Route as ApiPublicSteamInitiateRouteImport } from './routes/api/public/steam/initiate'
+import { Route as ApiPublicHooksExpireOrdersRouteImport } from './routes/api/public/hooks/expire-orders'
 import { Route as ApiPublicDiscordInitiateRouteImport } from './routes/api/public/discord/initiate'
 import { Route as ApiPublicDiscordCallbackRouteImport } from './routes/api/public/discord/callback'
 import { Route as ApiPublicCheckoutCreateRouteImport } from './routes/api/public/checkout/create'
@@ -109,6 +110,12 @@ const ApiPublicSteamInitiateRoute = ApiPublicSteamInitiateRouteImport.update({
   path: '/api/public/steam/initiate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksExpireOrdersRoute =
+  ApiPublicHooksExpireOrdersRouteImport.update({
+    id: '/api/public/hooks/expire-orders',
+    path: '/api/public/hooks/expire-orders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicDiscordInitiateRoute =
   ApiPublicDiscordInitiateRouteImport.update({
     id: '/api/public/discord/initiate',
@@ -144,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
   '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
+  '/api/public/hooks/expire-orders': typeof ApiPublicHooksExpireOrdersRoute
   '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
   '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -165,6 +173,7 @@ export interface FileRoutesByTo {
   '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
   '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
+  '/api/public/hooks/expire-orders': typeof ApiPublicHooksExpireOrdersRoute
   '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
   '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -187,6 +196,7 @@ export interface FileRoutesById {
   '/api/public/checkout/create': typeof ApiPublicCheckoutCreateRoute
   '/api/public/discord/callback': typeof ApiPublicDiscordCallbackRoute
   '/api/public/discord/initiate': typeof ApiPublicDiscordInitiateRoute
+  '/api/public/hooks/expire-orders': typeof ApiPublicHooksExpireOrdersRoute
   '/api/public/steam/initiate': typeof ApiPublicSteamInitiateRoute
   '/api/public/steam/verify': typeof ApiPublicSteamVerifyRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/api/public/checkout/create'
     | '/api/public/discord/callback'
     | '/api/public/discord/initiate'
+    | '/api/public/hooks/expire-orders'
     | '/api/public/steam/initiate'
     | '/api/public/steam/verify'
     | '/api/public/stripe/webhook'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/api/public/checkout/create'
     | '/api/public/discord/callback'
     | '/api/public/discord/initiate'
+    | '/api/public/hooks/expire-orders'
     | '/api/public/steam/initiate'
     | '/api/public/steam/verify'
     | '/api/public/stripe/webhook'
@@ -252,6 +264,7 @@ export interface FileRouteTypes {
     | '/api/public/checkout/create'
     | '/api/public/discord/callback'
     | '/api/public/discord/initiate'
+    | '/api/public/hooks/expire-orders'
     | '/api/public/steam/initiate'
     | '/api/public/steam/verify'
     | '/api/public/stripe/webhook'
@@ -274,6 +287,7 @@ export interface RootRouteChildren {
   ApiPublicCheckoutCreateRoute: typeof ApiPublicCheckoutCreateRoute
   ApiPublicDiscordCallbackRoute: typeof ApiPublicDiscordCallbackRoute
   ApiPublicDiscordInitiateRoute: typeof ApiPublicDiscordInitiateRoute
+  ApiPublicHooksExpireOrdersRoute: typeof ApiPublicHooksExpireOrdersRoute
   ApiPublicSteamInitiateRoute: typeof ApiPublicSteamInitiateRoute
   ApiPublicSteamVerifyRoute: typeof ApiPublicSteamVerifyRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
@@ -393,6 +407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSteamInitiateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/expire-orders': {
+      id: '/api/public/hooks/expire-orders'
+      path: '/api/public/hooks/expire-orders'
+      fullPath: '/api/public/hooks/expire-orders'
+      preLoaderRoute: typeof ApiPublicHooksExpireOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/discord/initiate': {
       id: '/api/public/discord/initiate'
       path: '/api/public/discord/initiate'
@@ -434,6 +455,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCheckoutCreateRoute: ApiPublicCheckoutCreateRoute,
   ApiPublicDiscordCallbackRoute: ApiPublicDiscordCallbackRoute,
   ApiPublicDiscordInitiateRoute: ApiPublicDiscordInitiateRoute,
+  ApiPublicHooksExpireOrdersRoute: ApiPublicHooksExpireOrdersRoute,
   ApiPublicSteamInitiateRoute: ApiPublicSteamInitiateRoute,
   ApiPublicSteamVerifyRoute: ApiPublicSteamVerifyRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
