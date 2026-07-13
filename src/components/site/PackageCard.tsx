@@ -40,16 +40,21 @@ export function PackageCard({ pkg }: { pkg: Pkg }) {
         </div>
       )}
 
-      <div className="relative h-40 overflow-hidden">
+      <div
+        className="relative h-48 overflow-hidden"
+        style={{
+          background: `radial-gradient(circle at 50% 40%, color-mix(in oklab, ${meta.accentVar} 20%, transparent) 0%, oklch(0.14 0.02 250) 70%)`,
+        }}
+      >
         <img
           src={imageForSlug(pkg.slug)}
           alt={pkg.name}
           width={1024}
           height={1024}
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent pointer-events-none" />
         <div
           className="absolute -bottom-6 left-6 w-14 h-14 rounded-xl flex items-center justify-center backdrop-blur-md border"
           style={{
@@ -60,6 +65,7 @@ export function PackageCard({ pkg }: { pkg: Pkg }) {
           <Icon className="w-7 h-7" style={{ color: meta.accentVar }} />
         </div>
       </div>
+
 
       <div className="p-6 pt-8 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-1">
