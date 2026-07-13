@@ -56,13 +56,13 @@ export function PackageCard({ pkg }: { pkg: Pkg }) {
         />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent pointer-events-none" />
         <div
-          className="absolute -bottom-6 left-6 w-14 h-14 rounded-xl flex items-center justify-center backdrop-blur-md border"
+          className="absolute bottom-3 left-3 w-12 h-12 rounded-xl flex items-center justify-center backdrop-blur-md border shadow-lg"
           style={{
-            background: `color-mix(in oklab, ${meta.accentVar} 20%, oklch(0.14 0.02 250))`,
-            borderColor: `color-mix(in oklab, ${meta.accentVar} 50%, transparent)`,
+            background: `color-mix(in oklab, ${meta.accentVar} 25%, oklch(0.14 0.02 250))`,
+            borderColor: `color-mix(in oklab, ${meta.accentVar} 55%, transparent)`,
           }}
         >
-          <Icon className="w-7 h-7" style={{ color: meta.accentVar }} />
+          <Icon className="w-6 h-6" style={{ color: meta.accentVar }} />
         </div>
       </div>
 
