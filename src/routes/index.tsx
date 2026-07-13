@@ -22,7 +22,15 @@ function Home() {
 
         <div className="container-shop py-24 md:py-32 relative">
           <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
-            <img src={logo.url} width={100} height={100} alt="" className="mb-6 drop-shadow-[0_0_30px_oklch(0.62_0.20_255/0.5)]" />
+            <div className="mb-8 relative">
+              <div className="absolute inset-0 -z-10 rounded-full blur-3xl opacity-60" style={{ background: "radial-gradient(circle, oklch(0.62 0.20 255 / 0.55) 0%, transparent 70%)" }} />
+              <div className="w-36 h-36 md:w-44 md:h-44 rounded-full border border-primary/30 bg-gradient-to-b from-primary/10 to-transparent p-1 shadow-[0_0_60px_-10px_oklch(0.62_0.20_255/0.6)]">
+                <div className="w-full h-full rounded-full bg-background/40 backdrop-blur-sm flex items-center justify-center ring-1 ring-primary/20">
+                  <img src={logo.url} width={160} height={160} alt="Cobalt Rust EU" className="w-[78%] h-[78%] object-contain drop-shadow-[0_0_20px_oklch(0.62_0.20_255/0.7)]" />
+                </div>
+              </div>
+            </div>
+
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-xs font-medium text-primary-glow tracking-wider uppercase mb-6">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse" /> Server online · EU
             </div>
