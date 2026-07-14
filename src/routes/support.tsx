@@ -44,10 +44,10 @@ function Support() {
           <h3 className="mt-3 font-bold">Discord</h3>
           <p className="text-xs text-muted-foreground mt-1">Ping @Support in #help.</p>
         </a>
-        <a href="mailto:support@cobalt-rust.eu" className="panel p-6 hover:border-primary/40 transition-colors">
+        <a href="mailto:cobalt-rust@outlook.com" className="panel p-6 hover:border-primary/40 transition-colors">
           <Mail className="w-8 h-8 text-primary" />
           <h3 className="mt-3 font-bold">Email</h3>
-          <p className="text-xs text-muted-foreground mt-1 break-all">support@cobalt-rust.eu</p>
+          <p className="text-xs text-muted-foreground mt-1 break-all">cobalt-rust@outlook.com</p>
         </a>
         <div className="panel p-6">
           <LifeBuoy className="w-8 h-8 text-primary" />
