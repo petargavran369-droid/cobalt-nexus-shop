@@ -5,7 +5,7 @@ import { Mail, Lock, LogIn } from "lucide-react";
 import { lovable } from "@/integrations/lovable";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
-import logo from "@/assets/cobalt-logo.png.asset.json";
+const logo = { url: "/logo.png" };
 
 type AuthSearch = { redirect?: string };
 
