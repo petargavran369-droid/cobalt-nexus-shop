@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X, Shield, User as UserIcon, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import logo from "@/assets/cobalt-logo.png.asset.json";
+const logo = { url: "/logo.png" };
 
 const nav = [
   { to: "/", label: "Home" },

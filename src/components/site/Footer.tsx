@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logo from "@/assets/cobalt-logo.png.asset.json";
+const logo = { url: "/logo.png" };
 
 export function Footer() {
   return (
