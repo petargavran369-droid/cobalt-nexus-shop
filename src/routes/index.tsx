@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Shield, ShieldCheck, Zap, ArrowRight } from "lucide-react";
 import { fetchPackages } from "@/lib/packages";
 import { PackageCard } from "@/components/site/PackageCard";
-import heroBg from "@/assets/hero-bg.jpg";
-import logo from "@/assets/cobalt-logo.png.asset.json";
+const heroBg = "/images/hero-bg.jpg";
+const logo = { url: "/logo.png" };
 
 export const Route = createFileRoute("/")({ component: Home });
 
