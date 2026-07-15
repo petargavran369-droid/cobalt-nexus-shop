@@ -53,10 +53,21 @@ function Auth() {
 
   const google = async () => {
     setBusy(true);
-    // Primijeti kose navodnike ` na pocetku i kraju - oni dopustaju koristenje tvoje domene unutar linka
-    window.location.href = "https://supabase.net";
-
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth`,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      toast.error(err?.message ?? "Google auth failed");
+    } finally {
+      setBusy(false);
+    }
   };
+
 
 
   return (
