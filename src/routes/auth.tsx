@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Mail, Lock, LogIn } from "lucide-react";
-import { lovable } from "@/integrations/lovable";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 const logo = { url: "/logo.png" };
@@ -54,10 +53,18 @@ function Auth() {
 
   const google = async () => {
     setBusy(true);
-    const res = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/auth",
-    });
-    if (res.error) { toast.error(res.error.message); setBusy(false); }
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth`,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      toast.error(err?.message ?? "OAuth failed");
+      setBusy(false);
+    }
   };
 
   return (
@@ -114,3 +121,4 @@ function Auth() {
     </div>
   );
 }
+
