@@ -53,18 +53,8 @@ function Auth() {
 
   const google = async () => {
     setBusy(true);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth`,
-        },
-      });
-      if (error) throw error;
-    } catch (err: any) {
-      toast.error(err?.message ?? "OAuth failed");
-      setBusy(false);
-    }
+    // Prisilno otvaranje sluzbene /auth/v1/goto rute na tvom Supabase projektu
+    window.location.href = `https://supabase.co{window.location.origin}/auth`;
   };
 
   return (
