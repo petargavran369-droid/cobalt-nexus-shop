@@ -53,9 +53,10 @@ function Auth() {
 
   const google = async () => {
     setBusy(true);
-    // Prisilno otvaranje sluzbene /auth/v1/goto rute na tvom Supabase projektu
-    window.location.href = `https://supabase.co{window.location.origin}/auth`;
+    // Primijeti kose navodnike ` na pocetku i kraju - oni dopustaju koristenje tvoje domene unutar linka
+    window.location.href = `https://supabase.co`;
   };
+
 
   return (
     <div className="container-shop py-16 md:py-24 flex justify-center">
