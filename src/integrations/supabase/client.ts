@@ -3,10 +3,10 @@ import type { Database } from './types';
 
 const SUPABASE_URL =
   (import.meta.env.VITE_SUPABASE_URL as string | undefined) ||
-  "https://jnljalnixqevmnvyphzx.supabase.co";
+  "https://exaihifjdhzodaeqxttg.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY =
   (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined) ||
-  "sb_publishable_n4L3ipG477Mw4KGH-cbGzw_R5t9Mb3z";
+  "sb_publishable_JBD3n0Kh0BA5WoDJoMGEfw_mXwmo0C2";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
