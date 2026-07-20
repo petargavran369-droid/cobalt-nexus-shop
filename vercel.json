@@ -1,4 +1,22 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/adminapp/assets/:path*",
+      "destination": "https://rust-admin-buddy-phi.vercel.app/adminapp/assets/:path*"
+    },
+    {
+      "source": "/adminapp/lovable-uploads/:path*",
+      "destination": "https://rust-admin-buddy-phi.vercel.app/adminapp/lovable-uploads/:path*"
+    },
+    {
+      "source": "/adminapp",
+      "destination": "https://rust-admin-buddy-phi.vercel.app/adminapp/"
+    },
+    {
+      "source": "/adminapp/:path*",
+      "destination": "https://rust-admin-buddy-phi.vercel.app/adminapp/:path*"
+    }
   "rewrites": [
     {
       "source": "/auth/initiate",
