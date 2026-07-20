@@ -16,11 +16,10 @@
     {
       "source": "/adminapp/:path*",
       "destination": "https://rust-admin-buddy-phi.vercel.app/adminapp/:path*"
-    }
-  "rewrites": [
+    },
     {
       "source": "/auth/initiate",
       "destination": "https://lovable.app"
     }
   ]
-} 
+}
