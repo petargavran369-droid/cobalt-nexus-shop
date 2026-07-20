@@ -3,11 +3,15 @@
   "rewrites": [
     {
       "source": "/adminapp/assets/:path*",
-      "destination": "https://rust-admin-buddy-phi.vercel.app/adminapp/assets/:path*"
+      "destination": "https://rust-admin-buddy-phi.vercel.app/assets/:path*"
+    },
+    {
+      "source": "/adminapp/_build/:path*",
+      "destination": "https://rust-admin-buddy-phi.vercel.app/_build/:path*"
     },
     {
       "source": "/adminapp/lovable-uploads/:path*",
-      "destination": "https://rust-admin-buddy-phi.vercel.app/adminapp/lovable-uploads/:path*"
+      "destination": "https://rust-admin-buddy-phi.vercel.app/lovable-uploads/:path*"
     },
     {
       "source": "/adminapp",
