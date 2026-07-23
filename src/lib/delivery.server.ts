@@ -579,4 +579,3 @@ export async function activateOrderAndDeliver(
 
   return runDelivery(loaded.ctx, "grant", false);
 }
-
