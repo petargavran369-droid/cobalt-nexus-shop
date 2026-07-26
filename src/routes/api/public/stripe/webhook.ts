@@ -1,632 +1,154 @@
-// Server-only delivery pipeline: Rust WebRCON + Discord role management.
-// Never import this from client code — filename `.server.ts` blocks it from
-// the client bundle.
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { createFileRoute } from "@tanstack/react-router";
 
-type DeliveryAction = "grant" | "revoke";
-type DeliveryType = "rust_rcon" | "discord_role";
+// Stripe webhook — activates order + triggers delivery on checkout.session.completed
+export const Route = createFileRoute("/api/public/stripe/webhook")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        const raw = await request.text();
+        const signature = request.headers.get("stripe-signature") || "";
+        const whSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-interface DeliveryContext {
-  order_id: string;
-  package_slug: string;
-  duration_days: number;
-  steam_id: string | null;
-  discord_id: string | null;
-}
+        if (whSecret) {
+          const ok = await verifyStripeSignature(raw, signature, whSecret);
+          if (!ok) return new Response("Invalid signature", { status: 401 });
+        }
 
-interface LoadedOrder {
-  status: string | null;
-  activated_at: string | null;
-  expires_at: string | null;
-  ctx: DeliveryContext;
-}
+        let event: any;
+        try {
+          event = JSON.parse(raw);
+        } catch {
+          return new Response("bad json", { status: 400 });
+        }
 
-interface RconResult {
-  ok: boolean;
-  message?: string;
-  error?: string;
-}
+        if (
+          event.type !== "checkout.session.completed" &&
+          event.type !== "checkout.session.async_payment_succeeded"
+        ) {
+          return new Response("ignored", { status: 200 });
+        }
 
-interface DiscordResult {
-  ok: boolean;
-  status: number;
-  body: string;
-}
+        const session = event.data?.object;
+        const orderId: string | undefined =
+          session?.metadata?.order_id || session?.client_reference_id;
 
-const RCON_COMMANDS: Record<
-  string,
-  { add: string; remove: string; roleEnv: string } | undefined
-> = {
-  vip: {
-    add: "cobalt.vipranks.vip.add",
-    remove: "cobalt.vipranks.vip.remove",
-    roleEnv: "DISCORD_ROLE_VIP_ID",
-  },
-  "vip-plus": {
-    add: "cobalt.vipranks.vipplus.add",
-    remove: "cobalt.vipranks.vipplus.remove",
-    roleEnv: "DISCORD_ROLE_VIPPLUS_ID",
-  },
-  "queue-priority": {
-    add: "cobalt.vipranks.queue.add",
-    remove: "cobalt.vipranks.queue.remove",
-    roleEnv: "DISCORD_ROLE_QUEUE_PRIORITY_ID",
-  },
-};
+        if (!orderId) {
+          return new Response("no order_id", { status: 400 });
+        }
 
-const SUPPORTER_ROLE_ENV = "DISCORD_ROLE_SUPPORTER_ID";
-const DEFAULT_DURATION_DAYS = 30;
-const MAX_DURATION_DAYS = 3650;
+        try {
+          const { activateOrderAndDeliver } =
+            await import("@/lib/delivery.server");
+          const { supabaseAdmin } =
+            await import("@/integrations/supabase/client.server");
 
-function cleanId(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const cleaned = value.trim();
-  return cleaned.length > 0 ? cleaned : null;
-}
+          const { error: paymentUpdateError } = await supabaseAdmin
+            .from("orders")
+            .update({
+              stripe_payment_intent_id: session.payment_intent ?? null,
+            })
+            .eq("id", orderId);
 
-function normalizeDurationDays(value: unknown): number {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_DURATION_DAYS;
-  return Math.min(Math.max(Math.trunc(parsed), 1), MAX_DURATION_DAYS);
-}
+          if (paymentUpdateError) {
+            throw new Error(
+              `Payment intent update failed: ${paymentUpdateError.message}`,
+            );
+          }
 
-async function loadOrder(orderId: string): Promise<LoadedOrder | null> {
-  const { data: order, error } = await supabaseAdmin
-    .from("orders")
-    .select("*, packages(slug, duration_days)")
-    .eq("id", orderId)
-    .maybeSingle();
+          const result = await activateOrderAndDeliver(orderId);
 
-  if (error) {
-    console.error("[delivery] order lookup failed", {
-      orderId,
-      error: error.message,
-    });
-    throw new Error(`Order lookup failed: ${error.message}`);
-  }
+          console.log("[stripe.webhook] delivery result", {
+            orderId,
+            rcon: result.rcon,
+            discord: result.discord,
+          });
 
-  if (!order) {
-    console.error("[delivery] order not found", { orderId });
-    return null;
-  }
+          // Critical: do not return 200 when delivery.server.ts merely returns
+          // { rcon: false } without throwing.
+          if (!result.rcon) {
+            return new Response(
+              `delivery error: Rust RCON delivery returned false (discord=${result.discord})`,
+              { status: 500 },
+            );
+          }
 
-  const packageData = (order as any).packages;
-  const slug =
-    typeof packageData?.slug === "string" ? packageData.slug.trim() : "";
+          return new Response(
+            JSON.stringify({
+              ok: true,
+              orderId,
+              rcon: result.rcon,
+              discord: result.discord,
+            }),
+            {
+              status: 200,
+              headers: { "content-type": "application/json" },
+            },
+          );
+        } catch (error: any) {
+          console.error(
+            "[stripe.webhook] delivery error",
+            error?.message,
+            error?.stack,
+          );
 
-  return {
-    status: typeof (order as any).status === "string" ? (order as any).status : null,
-    activated_at:
-      typeof (order as any).activated_at === "string"
-        ? (order as any).activated_at
-        : null,
-    expires_at:
-      typeof (order as any).expires_at === "string"
-        ? (order as any).expires_at
-        : null,
-    ctx: {
-      order_id: (order as any).id,
-      package_slug: slug,
-      duration_days: normalizeDurationDays(packageData?.duration_days),
-      steam_id: cleanId((order as any).steam_id),
-      discord_id: cleanId((order as any).discord_id),
-    },
-  };
-}
-
-async function wasStepSuccessful(
-  orderId: string,
-  type: DeliveryType,
-  action: DeliveryAction,
-): Promise<boolean> {
-  const { data, error } = await supabaseAdmin
-    .from("deliveries")
-    .select("id")
-    .eq("order_id", orderId)
-    .eq("type", type)
-    .eq("action", action)
-    .eq("status", "success")
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    // Do not block delivery if the idempotency lookup itself fails.
-    console.error("[delivery] success lookup failed", {
-      orderId,
-      type,
-      action,
-      error: error.message,
-    });
-    return false;
-  }
-
-  return Boolean(data);
-}
-
-async function logDelivery(row: {
-  order_id: string;
-  type: DeliveryType;
-  action: DeliveryAction;
-  status: "success" | "failed";
-  target?: string | null;
-  command?: string | null;
-  request: unknown;
-  response: unknown;
-  error?: string | null;
-}): Promise<boolean> {
-  const { error } = await supabaseAdmin.from("deliveries").insert({
-    order_id: row.order_id,
-    type: row.type,
-    action: row.action,
-    target: row.target ?? null,
-    command: row.command ?? null,
-    status: row.status,
-    request_payload: row.request as any,
-    response_payload: row.response as any,
-    error_message: row.error ?? null,
-  } as any);
-
-  if (error) {
-    // Keep the actual RCON/Discord pipeline running, but make the database
-    // mismatch visible in Vercel logs.
-    console.error("[delivery.log] insert failed", {
-      orderId: row.order_id,
-      type: row.type,
-      action: row.action,
-      status: row.status,
-      error: error.message,
-    });
-    return false;
-  }
-
-  return true;
-}
-
-// ---------- Rust WebRCON via native WebSocket ----------
-export async function sendRconCommand(command: string): Promise<RconResult> {
-  const host = process.env.RUST_RCON_HOST?.trim();
-  const port = process.env.RUST_RCON_PORT?.trim();
-  const password = process.env.RUST_RCON_PASSWORD;
-
-  if (!host || !port || !password) {
-    return {
-      ok: false,
-      error:
-        "RCON not configured (missing RUST_RCON_HOST/PORT/PASSWORD env)",
-    };
-  }
-
-  if (!/^\d{1,5}$/.test(port)) {
-    return { ok: false, error: "Invalid RUST_RCON_PORT" };
-  }
-
-  const portNumber = Number(port);
-  if (portNumber < 1 || portNumber > 65535) {
-    return { ok: false, error: "Invalid RUST_RCON_PORT range" };
-  }
-
-  if (typeof globalThis.WebSocket !== "function") {
-    return {
-      ok: false,
-      error:
-        "Native WebSocket is unavailable in this runtime. Use the Vercel Node.js 22.x runtime.",
-    };
-  }
-
-  const url = `ws://${host}:${port}/${encodeURIComponent(password)}`;
-  const identifier = Math.floor(Math.random() * 2_000_000_000) + 1;
-
-  return new Promise<RconResult>((resolve) => {
-    let settled = false;
-    const seen: string[] = [];
-    let socket: WebSocket | null = null;
-
-    const timeout = setTimeout(() => {
-      finish({
-        ok: false,
-        error: `RCON timeout (no reply for id ${identifier})`,
-      });
-    }, 12_000);
-
-    function finish(result: RconResult) {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timeout);
-
-      try {
-        socket?.close();
-      } catch {
-        // ignored
-      }
-
-      resolve({
-        ...result,
-        message: result.message ?? seen.join(" | ").slice(0, 500),
-      });
-    }
-
-    try {
-      socket = new globalThis.WebSocket(url);
-    } catch (error: any) {
-      finish({
-        ok: false,
-        error: error?.message || "RCON connect failed",
-      });
-      return;
-    }
-
-    socket.addEventListener("open", () => {
-      try {
-        socket?.send(
-          JSON.stringify({
-            Identifier: identifier,
-            Message: command,
-            Name: "CobaltShop",
-          }),
-        );
-      } catch (error: any) {
-        finish({
-          ok: false,
-          error: error?.message || "RCON send failed",
-        });
-      }
-    });
-
-    socket.addEventListener("message", (event: MessageEvent) => {
-      const text =
-        typeof event.data === "string"
-          ? event.data
-          : event.data instanceof ArrayBuffer
-            ? new TextDecoder().decode(event.data)
-            : String(event.data);
-
-      let parsed: any;
-      try {
-        parsed = JSON.parse(text);
-      } catch {
-        return;
-      }
-
-      if (!parsed || Number(parsed.Identifier) !== identifier) {
-        return;
-      }
-
-      const message = String(parsed.Message ?? "").trim();
-      if (message) seen.push(message);
-
-      const lower = message.toLowerCase();
-      const failed =
-        message.length === 0 ||
-        lower.includes("unknown command") ||
-        lower.includes("command not found") ||
-        lower.includes("invalid command") ||
-        lower.includes("no permission") ||
-        lower.includes("error") ||
-        lower.includes("exception") ||
-        lower.startsWith("usage:");
-
-      finish(
-        failed
-          ? { ok: false, error: message || "Empty RCON reply" }
-          : { ok: true, message },
-      );
-    });
-
-    socket.addEventListener("error", () => {
-      finish({
-        ok: false,
-        error:
-          "RCON websocket error (connection refused / wrong host, port or password)",
-      });
-    });
-
-    socket.addEventListener("close", (event: CloseEvent) => {
-      if (!settled) {
-        finish({
-          ok: false,
-          error: `RCON closed before reply (code ${event.code}${
-            event.reason ? `: ${event.reason}` : ""
-          })`,
-        });
-      }
-    });
-  });
-}
-
-// ---------- Discord role via Bot API ----------
-async function discordRoleCall(
-  action: DeliveryAction,
-  userId: string,
-  roleId: string,
-): Promise<DiscordResult> {
-  const botToken = process.env.DISCORD_BOT_TOKEN?.trim();
-  const guildId = process.env.DISCORD_GUILD_ID?.trim();
-
-  if (!botToken || !guildId) {
-    return {
-      ok: false,
-      status: 0,
-      body: "Discord bot not configured",
-    };
-  }
-
-  const url =
-    `https://discord.com/api/v10/guilds/${encodeURIComponent(guildId)}` +
-    `/members/${encodeURIComponent(userId)}` +
-    `/roles/${encodeURIComponent(roleId)}`;
-
-  try {
-    const response = await fetch(url, {
-      method: action === "grant" ? "PUT" : "DELETE",
-      headers: {
-        authorization: `Bot ${botToken}`,
-        "content-type": "application/json",
-      },
-    });
-
-    const body = await response.text();
-    // Discord returns 204 No Content on success. A revoke returning 404 means
-    // the role/member is already absent and is therefore idempotently complete.
-    const ok =
-      response.ok || (action === "revoke" && response.status === 404);
-
-    return { ok, status: response.status, body };
-  } catch (error: any) {
-    return {
-      ok: false,
-      status: 0,
-      body: error?.message || "Discord request failed",
-    };
-  }
-}
-
-// ---------- Public entry points ----------
-export async function deliverOrder(
-  orderId: string,
-  force = false,
-): Promise<{ rcon: boolean; discord: boolean }> {
-  const loaded = await loadOrder(orderId);
-  if (!loaded) return { rcon: false, discord: false };
-  return runDelivery(loaded.ctx, "grant", force);
-}
-
-export async function revokeOrder(
-  orderId: string,
-  force = false,
-): Promise<{ rcon: boolean; discord: boolean }> {
-  const loaded = await loadOrder(orderId);
-  if (!loaded) return { rcon: false, discord: false };
-  return runDelivery(loaded.ctx, "revoke", force);
-}
-
-async function runDelivery(
-  ctx: DeliveryContext,
-  action: DeliveryAction,
-  force: boolean,
-): Promise<{ rcon: boolean; discord: boolean }> {
-  const map = RCON_COMMANDS[ctx.package_slug];
-
-  if (!map && ctx.package_slug !== "support") {
-    const message = `Unsupported package slug: ${ctx.package_slug || "(empty)"}`;
-    console.error("[delivery]", message, { orderId: ctx.order_id });
-
-    await logDelivery({
-      order_id: ctx.order_id,
-      type: "rust_rcon",
-      action,
-      status: "failed",
-      target: ctx.steam_id,
-      command: null,
-      request: { slug: ctx.package_slug },
-      response: null,
-      error: message,
-    });
-
-    await logDelivery({
-      order_id: ctx.order_id,
-      type: "discord_role",
-      action,
-      status: "failed",
-      target: ctx.discord_id,
-      command: null,
-      request: { slug: ctx.package_slug },
-      response: null,
-      error: message,
-    });
-
-    return { rcon: false, discord: false };
-  }
-
-  let rconOk = true; // Support package has no Rust step.
-  let discordOk = true;
-
-  // ---- Rust RCON step (skip for support package) ----
-  if (map) {
-    const previouslySucceeded =
-      !force &&
-      (await wasStepSuccessful(
-        ctx.order_id,
-        "rust_rcon",
-        action,
-      ));
-
-    if (!previouslySucceeded) {
-      if (!ctx.steam_id) {
-        rconOk = false;
-        await logDelivery({
-          order_id: ctx.order_id,
-          type: "rust_rcon",
-          action,
-          status: "failed",
-          target: null,
-          command: null,
-          request: { slug: ctx.package_slug },
-          response: null,
-          error: "No steam_id linked",
-        });
-        throw new Error("RCON delivery failed: No steam_id linked");
-      } else {
-        const command =
-          action === "grant"
-            ? `${map.add} ${ctx.steam_id} ${ctx.duration_days}`
-            : `${map.remove} ${ctx.steam_id} shop_${action}`;
-
-        const result = await sendRconCommand(command);
-        rconOk = result.ok;
-
-        await logDelivery({
-          order_id: ctx.order_id,
-          type: "rust_rcon",
-          action,
-          status: result.ok ? "success" : "failed",
-          target: ctx.steam_id,
-          command,
-          request: {
-            command,
-            steam_id: ctx.steam_id,
-            package_slug: ctx.package_slug,
-            duration_days: ctx.duration_days,
-          },
-          response: {
-            message: result.message,
-            error: result.error,
-          },
-          error: result.error ?? null,
-        });
-
-        // Do not let Stripe receive a false 200 when the Rust command failed.
-        // The webhook catch will return HTTP 500 with this exact reason.
-        if (!result.ok) {
-          throw new Error(
-            `RCON delivery failed: ${result.error || result.message || "Unknown RCON error"}`,
+          return new Response(
+            `delivery error: ${error?.message || "Unknown error"}`,
+            { status: 500 },
           );
         }
-      }
-    }
-  }
+      },
+    },
+  },
+});
 
-  // ---- Discord role step ----
-  const roleEnv = map
-    ? map.roleEnv
-    : ctx.package_slug === "support"
-      ? SUPPORTER_ROLE_ENV
-      : null;
+async function verifyStripeSignature(
+  payload: string,
+  header: string,
+  secret: string,
+): Promise<boolean> {
+  const entries = header
+    .split(",")
+    .map((part) => part.split("="))
+    .filter(([key, value]) => key && value);
 
-  if (!roleEnv) {
-    discordOk = false;
-  } else {
-    const roleId = process.env[roleEnv]?.trim() || null;
-    const previouslySucceeded =
-      !force &&
-      (await wasStepSuccessful(
-        ctx.order_id,
-        "discord_role",
-        action,
-      ));
+  const parts = Object.fromEntries(entries);
+  const timestamp = parts["t"];
+  const signatures = header
+    .split(",")
+    .filter((part) => part.startsWith("v1="))
+    .map((part) => part.slice(3));
 
-    if (!previouslySucceeded) {
-      if (!roleId) {
-        discordOk = false;
-        await logDelivery({
-          order_id: ctx.order_id,
-          type: "discord_role",
-          action,
-          status: "failed",
-          target: ctx.discord_id,
-          command: null,
-          request: {
-            role_env: roleEnv,
-            user_id: ctx.discord_id,
-          },
-          response: null,
-          error: `Missing environment variable: ${roleEnv}`,
-        });
-      } else if (!ctx.discord_id) {
-        discordOk = false;
-        await logDelivery({
-          order_id: ctx.order_id,
-          type: "discord_role",
-          action,
-          status: "failed",
-          target: null,
-          command: `discord_role:${action}:${roleId}`,
-          request: {
-            role_id: roleId,
-            role_env: roleEnv,
-          },
-          response: null,
-          error: "No discord_id linked",
-        });
-      } else {
-        const result = await discordRoleCall(
-          action,
-          ctx.discord_id,
-          roleId,
-        );
+  if (!timestamp || signatures.length === 0) return false;
 
-        discordOk = result.ok;
+  const signedPayload = `${timestamp}.${payload}`;
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
 
-        await logDelivery({
-          order_id: ctx.order_id,
-          type: "discord_role",
-          action,
-          status: result.ok ? "success" : "failed",
-          target: ctx.discord_id,
-          command: `discord_role:${action}:${roleId}`,
-          request: {
-            role_id: roleId,
-            role_env: roleEnv,
-            user_id: ctx.discord_id,
-            package_slug: ctx.package_slug,
-          },
-          response: {
-            status: result.status,
-            body: result.body.slice(0, 500),
-          },
-          error: result.ok
-            ? null
-            : result.status === 0
-              ? result.body.slice(0, 200)
-              : `HTTP ${result.status}: ${result.body.slice(0, 200)}`,
-        });
-      }
-    }
-  }
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(signedPayload),
+  );
 
-  return { rcon: rconOk, discord: discordOk };
+  const expectedHex = Array.from(new Uint8Array(signature))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+
+  return signatures.some((candidate) => constantTimeEqual(expectedHex, candidate));
 }
 
-export async function activateOrderAndDeliver(
-  orderId: string,
-): Promise<{ rcon: boolean; discord: boolean }> {
-  const loaded = await loadOrder(orderId);
-  if (!loaded) return { rcon: false, discord: false };
+function constantTimeEqual(left: string, right: string): boolean {
+  if (left.length !== right.length) return false;
 
-  // A resent Stripe webhook must not reset or extend an already-active order.
-  if (loaded.status !== "active") {
-    const now = new Date();
-    const expires = new Date(
-      now.getTime() +
-        loaded.ctx.duration_days * 24 * 60 * 60 * 1000,
-    );
-
-    const { error } = await supabaseAdmin
-      .from("orders")
-      .update({
-        status: "active" as const,
-        activated_at: now.toISOString(),
-        expires_at: expires.toISOString(),
-      })
-      .eq("id", orderId);
-
-    if (error) {
-      console.error("[delivery] order activation failed", {
-        orderId,
-        error: error.message,
-      });
-      throw new Error(`Order activation failed: ${error.message}`);
-    }
+  let diff = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    diff |= left.charCodeAt(index) ^ right.charCodeAt(index);
   }
 
-  return runDelivery(loaded.ctx, "grant", false);
+  return diff === 0;
 }
