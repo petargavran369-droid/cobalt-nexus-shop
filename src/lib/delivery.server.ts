@@ -464,6 +464,7 @@ async function runDelivery(
           response: null,
           error: "No steam_id linked",
         });
+        throw new Error("RCON delivery failed: No steam_id linked");
       } else {
         const command =
           action === "grant"
@@ -492,6 +493,14 @@ async function runDelivery(
           },
           error: result.error ?? null,
         });
+
+        // Do not let Stripe receive a false 200 when the Rust command failed.
+        // The webhook catch will return HTTP 500 with this exact reason.
+        if (!result.ok) {
+          throw new Error(
+            `RCON delivery failed: ${result.error || result.message || "Unknown RCON error"}`,
+          );
+        }
       }
     }
   }
